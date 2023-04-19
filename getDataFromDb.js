@@ -4,34 +4,36 @@ const { env } = require('process');
 const mongoUri = env.MONGO_URI;
 
 
- 
+ const client = new MongoClient(mongoUri);
+
 async function getDbData(parsedCode){
-const client = new MongoClient(mongoUri);
 const codeToSearch = parsedCode;
 try {
     // Connect to the MongoDB cluster
-    //await client.connect();
+    await client.connect();
 
-    // Make the appropriate DB calls
-    return getCodeFromDb(client, codeToSearch);
+    const found = await getCodeFromDb(client, codeToSearch)
+    console.log(found);
 
-} catch (e) {
-    console.error(e);
-} finally {
-    await client.close();
+
+    return "";
+
+    } catch (e) {
+        console.error(e);
+    } finally {
+        await client.close();
+    }
 }
-}
 
-function getCodeFromDb(client, codeToSearch){
-/*database = client.db("");
-collection = database.collection("");
-const query = { code: codeToSearch};
-const options = {
-    projection: { code: 1 },
-};
-const codeFound = await collection.findOne(query, options);
-*/
-return 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=';
+async function getCodeFromDb(client, codeToSearch){
+    const database = client.db("lockbuy");
+    collection = database.collection("code");
+    const query = { lockerID:'I01A'};
+    const options = {
+        projection: { lockerID: 1 ,code: 1 },
+    };
+    const codeFound = await collection.findOne(query, options);
+    return codeFound;
 };
 
 module.exports = { getDbData };

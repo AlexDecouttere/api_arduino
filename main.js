@@ -39,7 +39,7 @@ app.post('/check', async function (req, res) {
    parsedCodeFromDb = await db_lib.getDbData(parsedCode)
    console.log('code db '+parsedCodeFromDb)
 
-   if(parsedCode == parsedCodeFromDb){
+   if(parsedCode === parsedCodeFromDb){
       res.status(200).send('Correct code')
    }
    else{
