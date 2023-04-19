@@ -1,13 +1,12 @@
 var express = require('express');
 var crypto = require("crypto")
-var db_lib = require("./db.js");
+var db_lib = require("./getDataFromDb.js");
 const createHttpError = require("http-errors");
 const jwt = require('jsonwebtoken');
 const { env } = require('process');
 const signing_Key = env.SIGNING_KEY;
 
 var app = express();
-var algorithm = "sha256"
 
 app.use(express.json());
 
@@ -16,11 +15,10 @@ app.use(function(req, res, next) {
    //check if bearer is undefined  
    if(typeof bearerHeader != 'undefined'){  
       //split at the space  
-      const bearer = bearerHeader.split(' ');  
+      const bearer = bearerHeader.split(' ');
       //Get the token from array  
       const bearerToken = bearer[1];  
-      // set the token  
-      //Next middleware  
+      // verify the token
       jwt.verify(bearerToken, signing_Key,(err)=>{  
          if(err){  
             res.status(401).send('Unauthorized token given');  
@@ -35,18 +33,17 @@ app.use(function(req, res, next) {
    }  
  });
 
-app.post('/check', /*async*/ function (req, res) {
-   data = req.body
-   parsedCodeFromDb = "A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ="
-   console.log(hashRes(data['code']))
-   parsedCode = hashRes(data['code'])
-   //codeFromDb = await db_lib.getDbData(parsedCode);
+app.post('/check', async function (req, res) {
+   parsedCode = req.body['code']
+   console.log('code '+parsedCode)
+   parsedCodeFromDb = await db_lib.getDbData(parsedCode)
+   console.log('code db '+parsedCodeFromDb)
 
    if(parsedCode == parsedCodeFromDb){
       res.status(200).send('Correct code')
    }
    else{
-      resres.status(200).send('Wrong Code')
+      res.status(200).send('Wrong Code')
    }  
  })
 

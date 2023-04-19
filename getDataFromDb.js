@@ -10,10 +10,10 @@ const client = new MongoClient(mongoUri);
 const codeToSearch = parsedCode;
 try {
     // Connect to the MongoDB cluster
-    await client.connect();
+    //await client.connect();
 
     // Make the appropriate DB calls
-    await  getCodeFromDb(client, codeToSearch);
+    return getCodeFromDb(client, codeToSearch);
 
 } catch (e) {
     console.error(e);
@@ -22,14 +22,7 @@ try {
 }
 }
 
-/*async function listDatabases(client){
-databasesList = await client.db().col
-
-console.log("Databases:");
-databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-};*/
-
-async function getCodeFromDb(client, codeToSearch){
+function getCodeFromDb(client, codeToSearch){
 /*database = client.db("");
 collection = database.collection("");
 const query = { code: codeToSearch};
@@ -38,7 +31,7 @@ const options = {
 };
 const codeFound = await collection.findOne(query, options);
 */
-return '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4';
+return 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=';
 };
 
 module.exports = { getDbData };
