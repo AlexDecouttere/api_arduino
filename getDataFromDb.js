@@ -3,8 +3,7 @@ const {MongoClient} = require('mongodb');
 const { env } = require('process');
 const mongoUri = env.MONGO_URI;
 
-
- const client = new MongoClient(mongoUri);
+const client = new MongoClient(mongoUri);
 
 async function getDbData(parsedCode){
 const codeToSearch = parsedCode;
@@ -15,8 +14,7 @@ try {
     const found = await getCodeFromDb(client, codeToSearch)
     console.log(found);
 
-
-    return "";
+    return found;
 
     } catch (e) {
         console.error(e);
@@ -33,7 +31,20 @@ async function getCodeFromDb(client, codeToSearch){
         projection: { lockerID: 1 ,code: 1 },
     };
     const codeFound = await collection.findOne(query, options);
-    return codeFound;
+    await delDocument(database, collection, 'I01A', codeToSearch)
+    return codeFound.code;
 };
+
+async function delDocument(base, collection, lockerId, code ){
+    const database = base;
+    const movies = collection;
+    const query = { lockerID: lockerId, code: code};
+    const result = await movies.deleteOne(query);
+        if (result.deletedCount === 1) {
+          console.log("Successfully deleted one document.");
+        } else {
+          console.log("No documents matched the query. Deleted 0 documents.");
+        }
+}
 
 module.exports = { getDbData };

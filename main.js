@@ -1,5 +1,7 @@
 var express = require('express');
-var crypto = require("crypto")
+var crypto = require("sha256")
+var CryptoJS = require("crypto-js");
+
 var db_lib = require("./getDataFromDb.js");
 const createHttpError = require("http-errors");
 const jwt = require('jsonwebtoken');
@@ -7,6 +9,7 @@ const { env } = require('process');
 const signing_Key = env.SIGNING_KEY;
 
 var app = express();
+var algorithm = "sha256"
 
 app.use(express.json());
 
@@ -25,8 +28,7 @@ app.use(function(req, res, next) {
          }else{  
             next(); 
          }  
-      });  
- 
+      });
    }else{  
       //Forbidden  
       res.status(401).send('No token given');  
@@ -34,12 +36,16 @@ app.use(function(req, res, next) {
  });
 
 app.post('/check', async function (req, res) {
-   parsedCode = req.body['code']
-   console.log('code '+parsedCode)
-   parsedCodeFromDb = await db_lib.getDbData(parsedCode)
+   code = req.body['code']
+   console.log('code '+ code)
+   const hashCode = hashRes(code);
+
+   parsedCodeFromDb = await db_lib.getDbData(hashCode)
    console.log('code db '+parsedCodeFromDb)
 
-   if(parsedCode === parsedCodeFromDb){
+   console.log(hashCode);
+
+   if(hashCode === parsedCodeFromDb){
       res.status(200).send('Correct code')
    }
    else{
@@ -54,13 +60,7 @@ var server = app.listen(port , function () {
    var port = server.address().port
 })
 
-function jsonParser(stringValue) {
-   var string = JSON.stringify(stringValue);
-   var objectValue = JSON.parse(string);
-   return objectValue;
-}
-
 function hashRes(stringValue) {
-   var res = crypto.createHash(algorithm).update(stringValue).digest("base64")
+   var res = CryptoJS.SHA256(parseInt(stringValue)).toString(CryptoJS.enc.Base64);
    return res;
 }
