@@ -38,18 +38,19 @@ app.use(function(req, res, next) {
 app.post('/check', async function (req, res) {
    code = req.body['code']
    console.log('code '+ code)
-   const hashCode = hashRes(code);
+   //const hashCode = hashRes(code);
 
-   parsedCodeFromDb = await db_lib.getDbData(hashCode)
+   parsedCodeFromDb = await db_lib.getDbData(code)
    console.log('code db '+parsedCodeFromDb)
 
-   console.log(hashCode);
+   console.log(code);
+   console.log(parsedCodeFromDb);
 
-   if(hashCode === parsedCodeFromDb){
-      res.status(200).send('Correct code')
+   if(Number(code) === Number(parsedCodeFromDb)){
+      res.status(200).send('{ "response": "Correct code" }')
    }
    else{
-      res.status(200).send('Wrong Code')
+      res.status(200).send('{ "response": "Wrong code" }')
    }  
  })
 

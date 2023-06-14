@@ -31,15 +31,14 @@ async function getCodeFromDb(client, codeToSearch){
         projection: { lockerID: 1 ,code: 1 },
     };
     const codeFound = await collection.findOne(query, options);
+    console.log(codeFound);
     await delDocument(database, collection, 'I01A', codeToSearch)
     return codeFound.code;
 };
 
 async function delDocument(base, collection, lockerId, code ){
-    const database = base;
-    const movies = collection;
-    const query = { lockerID: lockerId, code: code};
-    const result = await movies.deleteOne(query);
+   collection = client.db("lockbuy").collection("code")
+    const result = await collection.deleteOne({ code: code } );
         if (result.deletedCount === 1) {
           console.log("Successfully deleted one document.");
         } else {
